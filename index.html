@@ -9,6 +9,7 @@
         :root {
             --primary-pink: #ff85a2;
             --deep-pink: #d81b60;
+            --soft-pink: #fff1f2;
         }
 
         body, html {
@@ -18,6 +19,17 @@
             display: flex; justify-content: center; align-items: center;
             overflow: hidden;
             transition: background 1.5s ease;
+        }
+
+        /* --- VIDEO NỀN --- */
+        #bg-video {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0; /* Ẩn lúc đầu */
+            transition: opacity 2s ease;
         }
 
         /* --- MÀN HÌNH 1: CUỐN LỊCH --- */
@@ -36,16 +48,13 @@
 
         .calendar-header { color: var(--deep-pink); font-size: 24px; font-weight: bold; margin-bottom: 20px; }
 
-        .calendar-grid {
-            display: grid; grid-template-columns: repeat(7, 40px); gap: 10px;
-        }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 40px); gap: 10px; }
 
         .calendar-day {
             width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
             border-radius: 8px; color: #ddd; font-weight: bold;
         }
 
-        /* Ngày 15 đặc biệt */
         .special-day {
             background: var(--deep-pink); color: white !important;
             cursor: pointer; transform: scale(1.2);
@@ -53,64 +62,37 @@
             animation: bounce 1.2s infinite;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: scale(1.2); }
-            50% { transform: scale(1.4); }
-        }
+        @keyframes bounce { 0%, 100% { transform: scale(1.2); } 50% { transform: scale(1.4); } }
+        .hint-text { margin-top: 25px; color: #666; font-size: 14px; }
 
-        .hint-text { margin-top: 25px; color: #666; font-weight: 400; font-size: 14px; }
-
-        /* --- TRANG 2: TRẮC NGHIỆM (Đã chỉnh màu hồng nhạt) --- */
+        /* --- TRANG 2: TRẮC NGHIỆM --- */
         #question-card {
-            text-align: center; 
-            display: none; 
-            z-index: 100;
-            width: 90%; 
-            max-width: 600px; 
-            opacity: 0;
-            transition: opacity 0.8s ease;
-            background: rgba(255, 255, 255, 0.6); /* Nền trắng mờ để chữ rõ hơn */
-            padding: 40px 20px;
-            border-radius: 30px;
-            backdrop-filter: blur(5px); /* Hiệu ứng kính mờ */
+            text-align: center; display: none; z-index: 100;
+            width: 90%; max-width: 600px; opacity: 0;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 40px 20px; border-radius: 30px;
+            backdrop-filter: blur(8px);
             border: 2px solid #ffcada;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .question-text {
-            /* Đổi sang màu hồng đậm hơn một chút để dễ đọc trên nền hồng nhạt */
-            color: #db2777; 
-            font-size: clamp(22px, 5vw, 35px);
-            margin-bottom: 40px; 
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
-        }
+        .question-text { color: #db2777; font-size: clamp(22px, 5vw, 35px); margin-bottom: 40px; }
 
         .option-btn {
-            /* Nút bấm màu hồng nhạt rất xinh */
-            background: #fff1f2; 
-            color: #db2777; 
-            border: 2px solid #ffcada;
-            padding: 15px 30px; 
-            border-radius: 50px; 
-            font-size: 16px; 
-            font-weight: bold;
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-            width: 100%; 
-            max-width: 280px;
-            box-shadow: 0 4px 10px rgba(255, 182, 193, 0.3);
+            background: var(--soft-pink); color: #db2777; border: 2px solid #ffcada;
+            padding: 15px 30px; border-radius: 50px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: all 0.3s ease; width: 100%; max-width: 280px;
+            margin: 5px;
         }
 
-        .option-btn:hover { 
-            transform: translateY(-3px); 
-            background: #ffcada; /* Hồng đậm hơn một chút khi di chuột vào */
-            color: white;
-            box-shadow: 0 6px 15px rgba(255, 182, 193, 0.5);
-        }
+        .option-btn:hover { transform: translateY(-3px); background: #ffcada; color: white; }
+
         /* --- TRANG CUỐI: THIỆP MỜI --- */
         #invite-page {
             display: none; flex-direction: column; align-items: center;
             width: 85%; max-width: 450px; z-index: 50; opacity: 0;
-            transform: scale(0.5); transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0.6) translateY(30px);
+            transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .image-frame {
@@ -120,17 +102,22 @@
         }
         #invite-page img { width: 100%; display: block; border-radius: 12px; }
 
-        /* --- HIỆU ỨNG TRANG TRÍ --- */
+        /* --- HIỆU ỨNG CHUYỂN CẢNH --- */
+        .fade-out-zoom { opacity: 0 !important; transform: scale(0.8) !important; }
+        .show-invite { display: flex !important; opacity: 1 !important; transform: scale(1) translateY(0) !important; }
+        .video-active { opacity: 0.5 !important; } /* Độ mờ video nền */
+
+        /* --- TRANG TRÍ --- */
         .marquee-wrapper { position: fixed; width: 100%; white-space: nowrap; overflow: hidden; display: none; z-index: 10; }
         #marquee-top { top: 5%; } #marquee-bottom { bottom: 5%; }
         .marquee-inner { display: inline-block; animation: marqueeSync 25s linear infinite; }
-        .marquee-text { font-size: 80px; font-weight: 900; color: rgba(216, 27, 96, 0.1); text-transform: uppercase; letter-spacing: 20px; padding-right: 100px; }
+        .marquee-text { font-size: 80px; font-weight: 900; color: rgba(216, 27, 96, 0.15); text-transform: uppercase; letter-spacing: 20px; padding-right: 100px; }
         @keyframes marqueeSync { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
         .balloon-item {
             position: absolute; bottom: -200px; border-radius: 100%; object-fit: cover;
             border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            animation: flyUp 7s linear forwards;
+            animation: flyUp 7s linear forwards; z-index: 60;
         }
         @keyframes flyUp {
             0% { transform: translateY(0) rotate(0deg); opacity: 0; }
@@ -140,11 +127,13 @@
 
         canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 5; }
         .hidden { display: none !important; }
-        .fade-in { display: block !important; opacity: 1 !important; }
-        .show-invite { display: flex !important; opacity: 1 !important; transform: scale(1) !important; }
     </style>
 </head>
 <body>
+
+<video id="bg-video" autoplay loop muted playsinline>
+    <source src="https://files.catbox.moe/vhke2b.mp4" type="video/mp4">
+</video>
 
 <audio id="bg-music" loop>
     <source src="https://files.catbox.moe/kemm3q.mp3" type="audio/mpeg">
@@ -153,8 +142,7 @@
 <div id="calendar-screen">
     <div class="calendar-box">
         <div class="calendar-header">Tháng 3 / 2026</div>
-        <div class="calendar-grid" id="days-gen">
-            </div>
+        <div class="calendar-grid" id="days-gen"></div>
         <p class="hint-text">Bấm vào ngày 15 để mở thiệp</p>
     </div>
 </div>
@@ -172,7 +160,7 @@
     <div class="image-frame">
         <img src="https://i.postimg.cc/3xJxQvT6/thgcham.png" alt="Thiệp Mời">
     </div>
-    <p style="color: #be185d; margin-top: 20px; font-weight: bold; background: #fff; padding: 10px 25px; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">Hẹn gặp bạn ở đó nhé! ❤️</p>
+    <p style="color: #be185d; margin-top: 20px; font-weight: bold; background: rgba(255,255,255,0.8); padding: 10px 25px; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">Hẹn gặp bạn ở đó nhé! ❤️</p>
 </div>
 
 <div class="marquee-wrapper" id="marquee-top">
@@ -186,7 +174,7 @@
 <canvas id="fireworks"></canvas>
 
 <script>
-    // 1. Khởi tạo lịch
+    // 1. Sinh lịch
     const daysGen = document.getElementById('days-gen');
     for (let i = 1; i <= 31; i++) {
         const d = document.createElement('div');
@@ -196,7 +184,7 @@
         daysGen.appendChild(d);
     }
 
-    // 2. Chuyển từ Lịch sang Trắc nghiệm
+    // 2. Chuyển Lịch -> Trắc nghiệm
     function goToStep2() {
         document.getElementById('calendar-screen').style.opacity = '0';
         setTimeout(() => {
@@ -204,13 +192,11 @@
             const qCard = document.getElementById('question-card');
             qCard.style.display = 'block';
             setTimeout(() => qCard.style.opacity = '1', 50);
-            
-            // Đổi màu nền body thành hồng nhạt pastel
             document.body.style.background = '#fff1f2'; 
         }, 800);
     }
 
-    // 3. Chuyển từ Trắc nghiệm sang Thiệp (Phần code cũ của bạn)
+    // 3. Chuyển Trắc nghiệm -> Thiệp mời (Cải tiến mượt và thêm Video)
     const balloonImages = [
         'https://i.postimg.cc/WdCdK23Q/klinh_selfie.jpg',
         'https://i.postimg.cc/L84JTW0M/klinhcutedoimubaohiem.jpg',
@@ -221,25 +207,34 @@
     function startCelebration() {
         const music = document.getElementById('bg-music');
         const questionCard = document.getElementById('question-card');
+        const invitePage = document.getElementById('invite-page');
+        const bgVideo = document.getElementById('bg-video');
 
-        music.play().catch(e => console.log("Cần tương tác người dùng để phát nhạc"));
+        music.play().catch(e => console.log("Cần tương tác"));
         
-        questionCard.style.transform = 'scale(0)';
-        questionCard.style.opacity = '0';
-        document.body.style.background = 'linear-gradient(135deg, #fff1f2, #ffe4e6, #fecdd3)';
+        // Trắc nghiệm thu nhỏ và mờ dần
+        questionCard.classList.add('fade-out-zoom');
 
         setTimeout(() => {
             questionCard.style.display = 'none';
-            document.getElementById('invite-page').classList.add('show-invite');
+            invitePage.style.display = 'flex';
+            
+            // Hiện video nền và chữ chạy
+            bgVideo.classList.add('video-active');
             document.getElementById('marquee-top').style.display = 'block';
             document.getElementById('marquee-bottom').style.display = 'block';
+
+            // Thiệp mời bung ra mượt mà
+            setTimeout(() => {
+                invitePage.classList.add('show-invite');
+                startFireworks();
+                setInterval(createBalloon, 500); 
+            }, 100);
             
-            startFireworks();
-            setInterval(createBalloon, 500); 
         }, 800); 
     }
 
-    // --- LOGIC PHÁO HOA & STICKER (Giữ nguyên từ bản cũ của bạn) ---
+    // Logic bóng bay ảnh người
     function createBalloon() {
         const container = document.getElementById('balloon-container');
         const balloon = document.createElement('img');
@@ -254,6 +249,7 @@
         setTimeout(() => balloon.remove(), 7000);
     }
 
+    // Logic pháo hoa (Canvas)
     const canvas = document.getElementById("fireworks");
     const ctx = canvas.getContext("2d");
     let particles = [];
@@ -281,7 +277,7 @@
             const y = Math.random() * canvas.height * 0.4;
             const color = colors[Math.floor(Math.random() * colors.length)];
             for (let i = 0; i < 30; i++) particles.push(new Particle(x, y, color));
-        }, 800); // Tần suất pháo nổ ít thôi như bạn muốn
+        }, 1000); // Nổ thưa hơn cho đỡ rối
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach((p, i) => {
