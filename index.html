@@ -6,30 +6,6 @@
     <title>Thiệp Mời - NGUYỄN KHÁNH LINH</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-    /* Hiệu ứng mờ dần và thu nhỏ cho Trắc nghiệm khi biến mất */
-        .fade-out-zoom {
-            opacity: 0 !important;
-            transform: scale(0.8) !important;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Thiết lập ban đầu cho Thiệp mời để chuẩn bị phóng lên */
-        #invite-page {
-            display: none;
-            opacity: 0;
-            transform: scale(0.5) translateY(50px); /* Bắt đầu từ dưới và nhỏ */
-            transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Hiệu ứng bung ra */
-            flex-direction: column;
-            align-items: center;
-            z-index: 50;
-        }
-
-        /* Khi thiệp mời xuất hiện */
-        .show-invite {
-            display: flex !important;
-            opacity: 1 !important;
-            transform: scale(1) translateY(0) !important;
-        }
         :root {
             --primary-pink: #ff85a2;
             --deep-pink: #d81b60;
