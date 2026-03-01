@@ -48,19 +48,22 @@
         @keyframes bounce { 0%, 100% { transform: scale(1.2); } 50% { transform: scale(1.35); } }
         .hint-text { margin-top: 25px; color: #888; font-size: 13px; }
 
-        /* --- MÀN HÌNH 2: THIỆP MỜI --- */
+        /* --- MÀN HÌNH 2: THIỆP MỜI (FULL KHUNG) --- */
         #invite-page {
             display: none; flex-direction: column; align-items: center;
-            width: 85%; max-width: 420px; z-index: 50; opacity: 0;
+            width: 95%; max-width: 500px; z-index: 50; opacity: 0;
             transform: scale(0.7);
             transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .image-frame {
-            width: 100%; background: white; padding: 10px;
+            width: 100%; background: white; padding: 5px; /* Viền mỏng sát ảnh */
             border-radius: 20px; box-shadow: 0 15px 45px rgba(219, 39, 119, 0.2);
             border: 4px solid #ffb6c1;
         }
-        #invite-page img { width: 100%; display: block; border-radius: 12px; }
+        #invite-page img { 
+            width: 100%; display: block; border-radius: 15px; 
+            object-fit: contain; /* Giữ nguyên tỉ lệ ảnh */
+        }
 
         /* --- ĐỒNG HỒ ĐẾM NGƯỢC --- */
         #countdown-wrapper {
@@ -118,7 +121,6 @@
 <div id="balloon-container"></div>
 
 <script>
-    // 1. Tạo lịch
     const daysGen = document.getElementById('days-gen');
     for (let i = 1; i <= 31; i++) {
         const d = document.createElement('div');
@@ -128,7 +130,6 @@
         daysGen.appendChild(d);
     }
 
-    // 2. Chuyển trực tiếp từ Lịch sang Thiệp
     function showInvite() {
         document.getElementById('calendar-screen').style.opacity = '0';
         setTimeout(() => {
@@ -142,23 +143,21 @@
         }, 800);
     }
 
-    // 3. Logic Đếm ngược
     function updateCountdown() {
         const target = new Date("March 15, 2026 09:30:00").getTime();
         const now = new Date().getTime();
         const diff = target - now;
 
         if (diff > 0) {
-            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById('hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            document.getElementById('mins').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            document.getElementById('secs').innerText = Math.floor((diff % (1000 * 60)) / 1000);
+            document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+            document.getElementById('hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+            document.getElementById('mins').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+            document.getElementById('secs').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
         } else {
-            document.getElementById('countdown-wrapper').innerHTML = "Đã đến giờ rồi!";
+            document.getElementById('countdown-wrapper').innerHTML = "VÔ CHỤP THÔI MỌI NGƯỜI ƠIII";
         }
     }
 
-    // 4. Bóng bay (Giữ nguyên)
     const balloonImages = [
         'https://i.postimg.cc/WdCdK23Q/klinh_selfie.jpg',
         'https://i.postimg.cc/nLVbRt7G/matnaj.jpg',
