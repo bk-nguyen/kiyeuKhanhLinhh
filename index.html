@@ -6,250 +6,107 @@
     <title>Thiệp Mời - NGUYỄN KHÁNH LINH</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-pink: #ff85a2;
-            --deep-pink: #d81b60;
-            --soft-pink: #fff1f2;
-        }
+        :root { --primary-pink: #ff85a2; --deep-pink: #d81b60; --soft-pink: #fff1f2; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Poppins', sans-serif; background: #fdf6f0; overflow: hidden; }
 
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            font-family: 'Poppins', sans-serif;
-            background: #fff5f7; 
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
-            transition: background 1.5s ease;
-        }
-
-        /* --- VIDEO NỀN --- */
-        #bg-video {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: -1;
-            opacity: 0; /* Ẩn lúc đầu */
-            transition: opacity 2s ease;
-        }
-
-        /* --- MÀN HÌNH 1: CUỐN LỊCH --- */
-        #calendar-screen {
-            position: fixed; inset: 0;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #fdf6f0; z-index: 200;
-            transition: all 0.8s ease;
+        /* --- MÀN HÌNH 1: LỊCH & ĐẾM NGƯỢC --- */
+        #main-screen {
+            position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: all 0.8s ease; z-index: 200;
         }
 
         .calendar-box {
-            background: white; padding: 30px; border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            text-align: center; border: 3px solid var(--primary-pink);
+            background: white; padding: 30px; border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08); text-align: center; border: 3px solid var(--primary-pink);
         }
 
         .calendar-header { color: var(--deep-pink); font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 35px); gap: 10px; }
+        .calendar-day { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #ddd; font-weight: bold; }
+        
+        .special-day { background: var(--deep-pink); color: white !important; cursor: pointer; animation: bounce 1.2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 40px); gap: 10px; }
+        /* Countdown Style */
+        #countdown { display: flex; gap: 15px; margin-top: 25px; justify-content: center; }
+        .time-box { display: flex; flex-direction: column; align-items: center; }
+        .time-val { font-size: 20px; font-weight: 900; color: var(--deep-pink); }
+        .time-label { font-size: 10px; color: #888; text-transform: uppercase; }
 
-        .calendar-day {
-            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-            border-radius: 8px; color: #ddd; font-weight: bold;
-        }
-
-        .special-day {
-            background: var(--deep-pink); color: white !important;
-            cursor: pointer; transform: scale(1.2);
-            box-shadow: 0 0 15px rgba(216, 27, 96, 0.4);
-            animation: bounce 1.2s infinite;
-        }
-
-        @keyframes bounce { 0%, 100% { transform: scale(1.2); } 50% { transform: scale(1.4); } }
-        .hint-text { margin-top: 25px; color: #666; font-size: 14px; }
-
-        /* --- TRANG 2: TRẮC NGHIỆM --- */
-        #question-card {
-            text-align: center; display: none; z-index: 100;
-            width: 90%; max-width: 600px; opacity: 0;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 40px 20px; border-radius: 30px;
-            backdrop-filter: blur(8px);
-            border: 2px solid #ffcada;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .question-text { color: #db2777; font-size: clamp(22px, 5vw, 35px); margin-bottom: 40px; }
-
-        .option-btn {
-            background: var(--soft-pink); color: #db2777; border: 2px solid #ffcada;
-            padding: 15px 30px; border-radius: 50px; font-size: 16px; font-weight: bold;
-            cursor: pointer; transition: all 0.3s ease; width: 100%; max-width: 280px;
-            margin: 5px;
-        }
-
-        .option-btn:hover { transform: translateY(-3px); background: #ffcada; color: white; }
-
-        /* --- TRANG CUỐI: THIỆP MỜI --- */
+        /* --- MÀN HÌNH 2: THIỆP MỜI --- */
         #invite-page {
             display: none; flex-direction: column; align-items: center;
-            width: 85%; max-width: 450px; z-index: 50; opacity: 0;
-            transform: scale(0.6) translateY(30px);
-            transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 85%; max-width: 420px; opacity: 0; transform: scale(0.7);
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
-        .image-frame {
-            width: 100%; background: white; padding: 12px;
-            border-radius: 20px; box-shadow: 0 15px 40px rgba(219, 39, 119, 0.3);
-            border: 5px solid #ffb6c1;
-        }
+        .image-frame { width: 100%; background: white; padding: 10px; border-radius: 20px; box-shadow: 0 15px 45px rgba(219, 39, 119, 0.2); border: 4px solid #ffb6c1; }
         #invite-page img { width: 100%; display: block; border-radius: 12px; }
 
-        /* --- HIỆU ỨNG CHUYỂN CẢNH --- */
-        .fade-out-zoom { opacity: 0 !important; transform: scale(0.8) !important; }
-        .show-invite { display: flex !important; opacity: 1 !important; transform: scale(1) translateY(0) !important; }
-        .video-active { opacity: 0.5 !important; } /* Độ mờ video nền */
-
-        /* --- TRANG TRÍ --- */
-        .marquee-wrapper { position: fixed; width: 100%; white-space: nowrap; overflow: hidden; display: none; z-index: 10; }
-        #marquee-top { top: 5%; } #marquee-bottom { bottom: 5%; }
-        .marquee-inner { display: inline-block; animation: marqueeSync 25s linear infinite; }
-        .marquee-text { font-size: 80px; font-weight: 900; color: rgba(216, 27, 96, 0.15); text-transform: uppercase; letter-spacing: 20px; padding-right: 100px; }
-        @keyframes marqueeSync { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-        .balloon-item {
-            position: absolute; bottom: -200px; border-radius: 100%; object-fit: cover;
-            border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            animation: flyUp 7s linear forwards; z-index: 60;
-        }
-        @keyframes flyUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translateY(-130vh) rotate(360deg); opacity: 0; }
-        }
+        .fade-out { opacity: 0 !important; transform: scale(0.9) !important; }
+        .show-invite { display: flex !important; opacity: 1 !important; transform: scale(1) !important; }
 
         canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 5; }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<video id="bg-video" autoplay loop muted playsinline>
-    <source src="https://files.catbox.moe/vhke2b.mp4" type="video/mp4">
-</video>
+<audio id="bg-music" loop><source src="https://files.catbox.moe/kemm3q.mp3" type="audio/mpeg"></audio>
 
-<audio id="bg-music" loop>
-    <source src="https://files.catbox.moe/kemm3q.mp3" type="audio/mpeg">
-</audio>
-
-<div id="calendar-screen">
+<div id="main-screen">
     <div class="calendar-box">
         <div class="calendar-header">Tháng 3 / 2026</div>
         <div class="calendar-grid" id="days-gen"></div>
-        <p class="hint-text">Bấm vào ngày 15 để mở thiệp</p>
-    </div>
-</div>
-
-<div id="question-card">
-    <h1 class="question-text">BẠN MUỐN ĐẾN KỈ YẾU AI?</h1>
-    <div class="options-container">
-        <button class="option-btn" onclick="startCelebration()">A. KHÁNH LINH ĐÁNG IU</button>
-        <button class="option-btn" onclick="startCelebration()">B. KHÁNH LINH DỊU DÀNG</button>
-        <button class="option-btn" onclick="startCelebration()">C. KHÁNH LINH XINH GÁI</button>
+        <div id="countdown">
+            <div class="time-box"><span class="time-val" id="days">00</span><span class="time-label">Ngày</span></div>
+            <div class="time-box"><span class="time-val" id="hours">00</span><span class="time-label">Giờ</span></div>
+            <div class="time-box"><span class="time-val" id="mins">00</span><span class="time-label">Phút</span></div>
+        </div>
     </div>
 </div>
 
 <div id="invite-page">
-    <div class="image-frame">
-        <img src="https://i.postimg.cc/3xJxQvT6/thgcham.png" alt="Thiệp Mời">
-    </div>
-    <p style="color: #be185d; margin-top: 20px; font-weight: bold; background: rgba(255,255,255,0.8); padding: 10px 25px; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">Hẹn gặp bạn ở đó nhé! ❤️</p>
+    <div class="image-frame"><img src="https://i.postimg.cc/3xJxQvT6/thgcham.png" alt="Thiệp Mời"></div>
+    <p style="color: #be185d; margin-top: 20px; font-weight: bold;">Hẹn gặp bạn ở đó nhé! ❤️</p>
 </div>
 
-<div class="marquee-wrapper" id="marquee-top">
-    <div class="marquee-inner"><span class="marquee-text">GRADUATION PARTY • GRADUATION PARTY • </span></div>
-</div>
-<div class="marquee-wrapper" id="marquee-bottom">
-    <div class="marquee-inner"><span class="marquee-text">NGUYEN KHANH LINH • NGUYEN KHANH LINH • </span></div>
-</div>
-
-<div id="balloon-container"></div>
 <canvas id="fireworks"></canvas>
 
 <script>
-    // 1. Sinh lịch
+    // 1. Tạo lịch
     const daysGen = document.getElementById('days-gen');
     for (let i = 1; i <= 31; i++) {
         const d = document.createElement('div');
         d.className = 'calendar-day' + (i === 15 ? ' special-day' : '');
         d.innerText = i;
-        if (i === 15) d.onclick = goToStep2;
+        if (i === 15) d.onclick = showInvite;
         daysGen.appendChild(d);
     }
 
-    // 2. Chuyển Lịch -> Trắc nghiệm
-    function goToStep2() {
-        document.getElementById('calendar-screen').style.opacity = '0';
+    // 2. Countdown logic
+    const targetDate = new Date("March 15, 2026 00:00:00").getTime();
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const diff = targetDate - now;
+        document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+        document.getElementById('hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        document.getElementById('mins').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // 3. Chuyển sang thiệp
+    function showInvite() {
+        document.getElementById('main-screen').classList.add('fade-out');
+        document.getElementById('bg-music').play().catch(() => {});
         setTimeout(() => {
-            document.getElementById('calendar-screen').classList.add('hidden');
-            const qCard = document.getElementById('question-card');
-            qCard.style.display = 'block';
-            setTimeout(() => qCard.style.opacity = '1', 50);
-            document.body.style.background = '#fff1f2'; 
+            document.getElementById('main-screen').style.display = 'none';
+            const invite = document.getElementById('invite-page');
+            invite.classList.add('show-invite');
+            startFireworks();
         }, 800);
     }
 
-    // 3. Chuyển Trắc nghiệm -> Thiệp mời (Cải tiến mượt và thêm Video)
-    const balloonImages = [
-        'https://i.postimg.cc/WdCdK23Q/klinh_selfie.jpg',
-        'https://i.postimg.cc/L84JTW0M/klinhcutedoimubaohiem.jpg',
-        'https://i.postimg.cc/BnhXwCdp/klinhleluoi.jpg',
-        'https://i.postimg.cc/htrcCPQQ/klinhchoimat.jpg'
-    ];
-
-    function startCelebration() {
-        const music = document.getElementById('bg-music');
-        const questionCard = document.getElementById('question-card');
-        const invitePage = document.getElementById('invite-page');
-        const bgVideo = document.getElementById('bg-video');
-
-        music.play().catch(e => console.log("Cần tương tác"));
-        
-        // Trắc nghiệm thu nhỏ và mờ dần
-        questionCard.classList.add('fade-out-zoom');
-
-        setTimeout(() => {
-            questionCard.style.display = 'none';
-            invitePage.style.display = 'flex';
-            
-            // Hiện video nền và chữ chạy
-            bgVideo.classList.add('video-active');
-            document.getElementById('marquee-top').style.display = 'block';
-            document.getElementById('marquee-bottom').style.display = 'block';
-
-            // Thiệp mời bung ra mượt mà
-            setTimeout(() => {
-                invitePage.classList.add('show-invite');
-                startFireworks();
-                setInterval(createBalloon, 500); 
-            }, 100);
-            
-        }, 800); 
-    }
-
-    // Logic bóng bay ảnh người
-    function createBalloon() {
-        const container = document.getElementById('balloon-container');
-        const balloon = document.createElement('img');
-        balloon.src = balloonImages[Math.floor(Math.random() * balloonImages.length)];
-        balloon.className = 'balloon-item';
-        balloon.style.left = Math.random() * 90 + 'vw';
-        let size = Math.random() * 50 + 70; 
-        balloon.style.width = size + 'px';
-        balloon.style.height = size + 'px';
-        balloon.style.animationDuration = (Math.random() * 3 + 4) + 's';
-        container.appendChild(balloon);
-        setTimeout(() => balloon.remove(), 7000);
-    }
-
-    // Logic pháo hoa (Canvas)
+    // Canvas Fireworks (Giữ nguyên logic cũ)
     const canvas = document.getElementById("fireworks");
     const ctx = canvas.getContext("2d");
     let particles = [];
@@ -257,32 +114,20 @@
     window.addEventListener('resize', resize); resize();
 
     class Particle {
-        constructor(x, y, color) {
-            this.x = x; this.y = y; this.color = color;
-            this.velocity = { x: (Math.random() - 0.5) * 6, y: (Math.random() - 0.5) * 6 };
-            this.alpha = 1;
-        }
-        draw() {
-            ctx.globalAlpha = this.alpha;
-            ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
-            ctx.fillStyle = this.color; ctx.fill();
-        }
-        update() { this.x += this.velocity.x; this.y += this.velocity.y; this.alpha -= 0.015; }
+        constructor(x, y, color) { this.x = x; this.y = y; this.color = color; this.velocity = { x: (Math.random() - 0.5) * 5, y: (Math.random() - 0.5) * 5 }; this.alpha = 1; }
+        draw() { ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); }
+        update() { this.x += this.velocity.x; this.y += this.velocity.y; this.alpha -= 0.012; }
     }
 
     function startFireworks() {
-        const colors = ['#ffb6c1', '#ff69b4', '#ffffff', '#ffd700'];
+        const colors = ['#ffb6c1', '#ff69b4', '#ffd700'];
         setInterval(() => {
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height * 0.4;
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            for (let i = 0; i < 30; i++) particles.push(new Particle(x, y, color));
-        }, 1000); // Nổ thưa hơn cho đỡ rối
+            const x = Math.random() * canvas.width; const y = Math.random() * canvas.height * 0.5;
+            for (let i = 0; i < 20; i++) particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)]));
+        }, 1500);
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach((p, i) => {
-                if (p.alpha > 0) { p.update(); p.draw(); } else { particles.splice(i, 1); }
-            });
+            particles.forEach((p, i) => { if (p.alpha > 0) { p.update(); p.draw(); } else { particles.splice(i, 1); } });
             requestAnimationFrame(animate);
         }
         animate();
