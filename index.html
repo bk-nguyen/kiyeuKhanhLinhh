@@ -48,10 +48,10 @@
         @keyframes bounce { 0%, 100% { transform: scale(1.2); } 50% { transform: scale(1.35); } }
         .hint-text { margin-top: 25px; color: #888; font-size: 13px; }
 
-        /* --- MÀN HÌNH 2: THIỆP MỜI (ĐÃ LÀM TO HƠN) --- */
+        /* --- MÀN HÌNH 2: THIỆP MỜI --- */
         #invite-page {
             display: none; flex-direction: column; align-items: center;
-            width: 95%; max-width: 900px; /* Tăng max-width để thiệp to hơn */
+            width: 95%; max-width: 900px; 
             z-index: 50; opacity: 0;
             transform: scale(0.8);
             transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -66,9 +66,8 @@
             display: block; 
             border-radius: 18px; 
             object-fit: contain;
-            /* Thêm các dòng này để trình duyệt render ảnh đẹp hơn */
-            image-rendering: -webkit-optimize-contrast; 
-            image-rendering: crisp-edges;
+            image-rendering: auto; 
+            -webkit-backface-visibility: hidden;
         }
 
         /* --- ĐỒNG HỒ ĐẾM NGƯỢC --- */
@@ -95,12 +94,15 @@
             100% { transform: translateY(-125vh) rotate(360deg); opacity: 0; }
         }
         .hidden { display: none !important; }
+
+        /* --- PHÁO HOA --- */
+        canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 5; }
     </style>
 </head>
 <body>
 
 <audio id="bg-music" loop>
-    <source src="https://files.catbox.moe/kemm3q.mp3" type="audio/mpeg">
+    <source src="https://files.catbox.moe/gzrjkg.mp3" type="audio/mpeg">
 </audio>
 
 <div id="calendar-screen">
@@ -113,7 +115,7 @@
 
 <div id="invite-page">
     <div class="image-frame">
-        <img src="https://i.postimg.cc/xjkLBJ3r/con-bo-cua-a-CHO-WEB-(1920-x-1080-px).png" alt="Thiệp Mời">
+        <img src="https://i.postimg.cc/HnW47B7c/con-bo-cua-a-CHO-WEB-(900-x-483-px).png" alt="Thiệp Mời">
     </div>
     
     <div id="countdown-wrapper">
@@ -125,8 +127,7 @@
 </div>
 
 <div id="balloon-container"></div>
-
-<script>
+<canvas id="fireworks"></canvas> <script>
     const daysGen = document.getElementById('days-gen');
     for (let i = 1; i <= 31; i++) {
         const d = document.createElement('div');
@@ -146,6 +147,7 @@
             setInterval(createBalloon, 800);
             updateCountdown();
             setInterval(updateCountdown, 1000);
+            startFireworks(); // Kích hoạt pháo hoa
         }, 800);
     }
 
@@ -181,6 +183,65 @@
         balloon.style.animationDuration = (Math.random() * 2 + 5) + 's';
         container.appendChild(balloon);
         setTimeout(() => balloon.remove(), 6000);
+    }
+
+    /* --- PHÁO HOA SCRIPT --- */
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+    function resizeCanvas() { 
+        canvas.width = window.innerWidth; 
+        canvas.height = window.innerHeight; 
+    }
+    window.addEventListener('resize', resizeCanvas); 
+    resizeCanvas(); // Gọi lần đầu để đặt kích thước
+
+    class Particle {
+        constructor(x, y, color) {
+            this.x = x; this.y = y; this.color = color;
+            this.velocity = { x: (Math.random() - 0.5) * 6, y: (Math.random() - 0.5) * 6 };
+            this.alpha = 1;
+            this.friction = 0.95; // Giảm tốc độ hạt
+            this.gravity = 0.1; // Thêm trọng lực
+        }
+        draw() {
+            ctx.globalAlpha = this.alpha;
+            ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = this.color; ctx.fill();
+        }
+        update() { 
+            this.velocity.x *= this.friction;
+            this.velocity.y *= this.friction;
+            this.velocity.y += this.gravity; // Áp dụng trọng lực
+            this.x += this.velocity.x; 
+            this.y += this.velocity.y; 
+            this.alpha -= 0.015; 
+        }
+    }
+
+    function startFireworks() {
+        const colors = ['#ffb6c1', '#ff69b4', '#ffd700', '#ffffff', '#ff1493']; // Thêm màu hồng đậm hơn
+        setInterval(() => {
+            const x = Math.random() * canvas.width;
+            // Giới hạn pháo hoa ở nửa trên màn hình
+            const y = Math.random() * canvas.height * 0.6; 
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            for (let i = 0; i < 40; i++) particles.push(new Particle(x, y, color)); // Tăng số hạt
+        }, 1000); // Tần suất bắn pháo hoa nhanh hơn
+        
+        function animateFireworks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Xóa toàn bộ canvas để vẽ lại
+            particles.forEach((p, i) => {
+                if (p.alpha > 0) { 
+                    p.update(); 
+                    p.draw(); 
+                } else { 
+                    particles.splice(i, 1); 
+                }
+            });
+            requestAnimationFrame(animateFireworks);
+        }
+        animateFireworks();
     }
 </script>
 </body>
