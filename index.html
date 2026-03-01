@@ -62,8 +62,13 @@
             border: 5px solid #ffb6c1;
         }
         #invite-page img { 
-            width: 100%; display: block; border-radius: 18px; 
+            width: 100%; 
+            display: block; 
+            border-radius: 18px; 
             object-fit: contain;
+            /* Thêm các dòng này để trình duyệt render ảnh đẹp hơn */
+            image-rendering: -webkit-optimize-contrast; 
+            image-rendering: crisp-edges;
         }
 
         /* --- ĐỒNG HỒ ĐẾM NGƯỢC --- */
@@ -180,4 +185,3 @@
 </script>
 </body>
 </html>
-
